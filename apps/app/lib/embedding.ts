@@ -41,8 +41,17 @@ export async function createEmbedding(title: string, body: string) {
   return { data, error };
 }
 
+export async function generateEmbedding(body: string) {
+  const { embeddings } = await embedMany({
+    model: openai.embedding('text-embedding-3-small'),
+    values: [body],
+  });
+
+  return embeddings[0];
+}
+
 export async function matchDocuments(
-  embedding: string,
+  embedding: Array<number>,
   threshold: number,
   count: number,
 ) {

@@ -3,7 +3,7 @@ import { convertToCoreMessages, streamText } from 'ai';
 import { late, z } from 'zod';
 import createSupabaseServerClient from '../../../../lib/supabase/server';
 import { v4 as uuid } from 'uuid';
-import { createEmbedding, matchDocuments } from '../../../../lib/embedding';
+import { createEmbedding, generateEmbedding, matchDocuments } from '../../../../lib/embedding';
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
@@ -151,9 +151,10 @@ export async function POST(req: Request) {
           question: z.string().describe('the users question'),
         }),
         execute: async ({ question }) => {
-          const { data: documents } = await matchDocuments(question, 0.25, 3);
-          if (!documents) {
-            return 'I could not find any information on that topic.';
+          const embeddedQuestion = await generateEmbedding(question);
+          const { data: documents, error } = await matchDocuments(embeddedQuestion, 0.5, 3);
+          if (error) {
+            return error.message;
           }
           if (documents.length === 0) {
             return 'I could not find any information on that topic.';
