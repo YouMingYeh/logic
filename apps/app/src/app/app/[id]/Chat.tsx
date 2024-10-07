@@ -70,16 +70,32 @@ export default function Chat({ profile }: ChatProps) {
       ) : (
         <AI profile={profile} initialMessages={initialMessages} />
       )}
+      <Config />
     </motion.div>
   );
 }
 
 import { ToolInvocation } from 'ai';
 import { Message, useChat } from 'ai/react';
-import { Button, Emoji, Icons, Input, Textarea } from 'ui';
+import {
+  Button,
+  Emoji,
+  Icons,
+  Input,
+  Label,
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+  Textarea,
+  useToast,
+} from 'ui';
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import createSupabaseClientClient from '../../../../lib/supabase/client';
 import Image from 'next/image';
+import { createEmbedding } from '../../../../lib/embedding';
 
 function AI({
   profile,
@@ -125,7 +141,7 @@ Your responsibilities include:
 
 6. **Provide Incremental Analysis and Solutions**: Break down the user's challenge into key elements (e.g., root causes, causal relationships, underlying issues) and provide **step-by-step analysis and solutions**. Ensure each response builds upon the user's previous input to offer clear, actionable guidance that directly addresses the root cause.
 
-7. **Record Key Points Continuously**: Throughout the discussion, use **"storePoint"** to record:
+7. **Record Key Points Continuously**: Throughout the discussion, use **"addResource"** to record:
    - **Problem**: Define and refine the user's core challenge.
    - **Insights**: Document key insights at each stage.
    - **Competitors**: Record competitor-related information when relevant.
@@ -133,7 +149,7 @@ Your responsibilities include:
    - **Solutions and Strategies**: Save actionable solutions and proposed strategies.
    - **User Objectives**: Track the evolving goals and objectives of the user.
 
-8. **Retrieve Points When Needed**: Use **"retrievePoints"** to provide summaries or recall critical details from past discussions, ensuring continuity and a strong foundation for ongoing analysis.
+8. **Retrieve Information When Needed**: Use **"getInformation"** to provide summaries or recall critical details from past discussions, ensuring continuity and a strong foundation for ongoing analysis.
 
 9. **Deliver Tailored, Actionable Insights**: Provide specific, practical advice that the user can act upon immediately. Avoid generalizations—each suggestion must include **what actions to take next** and **how to take them** to achieve the desired outcome.
 
@@ -393,5 +409,91 @@ Your approach should be:
         )}
       </AnimatePresence>
     </>
+  );
+}
+
+function Config() {
+  const [embeddingTitle, setEmbeddingTitle] = useState('');
+  const [embeddingBody, setEmbeddingBody] = useState('');
+  const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
+  async function clear() {
+    const supabase = createSupabaseClientClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      return;
+    }
+    await supabase.from('message').delete().eq('user_id', user.id);
+    toast({
+      title: 'Messages cleared',
+    });
+    window.location.reload();
+  }
+  async function handleCreateEmbedding() {
+    setLoading(true);
+    const { error } = await createEmbedding(embeddingTitle, embeddingBody);
+    if (error) {
+      toast({
+        title: 'Error creating embedding',
+        description: error.message,
+        variant: 'destructive',
+      });
+    } else {
+      toast({
+        title: 'Embedding created',
+      });
+      setEmbeddingTitle('');
+      setEmbeddingBody('');
+    }
+    setLoading(false);
+  }
+  return (
+    <Sheet>
+      <SheetTrigger className='fixed bottom-4 right-4'>
+        <Button size='icon'>
+          <Icons.Settings className='size-full' />
+        </Button>
+      </SheetTrigger>
+      <SheetContent>
+        <SheetHeader>
+          <SheetTitle>Settings</SheetTitle>
+          <SheetDescription>Configure your AI Thinking Coach.</SheetDescription>
+        </SheetHeader>
+        <div className='mt-4 space-y-4'>
+          <div className='flex flex-col gap-2'>
+            <Label>Clear Messages</Label>
+            <Button onClick={clear} variant='outline' size='icon'>
+              <Icons.Trash2 className='size-full' />
+            </Button>
+          </div>
+          <form className='flex flex-col gap-2'>
+            <Label>Add Documents</Label>
+            <Input
+              placeholder='Title'
+              value={embeddingTitle}
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                setEmbeddingTitle(e.target.value)
+              }
+            />
+            <Textarea
+              placeholder='Body'
+              value={embeddingBody}
+              onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
+                setEmbeddingBody(e.target.value)
+              }
+            />
+            <Button
+              type='button'
+              onClick={handleCreateEmbedding}
+              loading={loading}
+            >
+              Add Document
+            </Button>
+          </form>
+        </div>
+      </SheetContent>
+    </Sheet>
   );
 }

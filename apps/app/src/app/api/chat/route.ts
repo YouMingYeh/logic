@@ -3,6 +3,7 @@ import { convertToCoreMessages, streamText } from 'ai';
 import { late, z } from 'zod';
 import createSupabaseServerClient from '../../../../lib/supabase/server';
 import { v4 as uuid } from 'uuid';
+import { createEmbedding, matchDocuments } from '../../../../lib/embedding';
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
@@ -11,7 +12,7 @@ export async function POST(req: Request) {
   const { messages } = await req.json();
 
   const result = await streamText({
-    model: openai('gpt-4o'),
+    model: openai('gpt-4o-mini'),
     messages: convertToCoreMessages(messages),
     tools: {
       // getWeatherInformation: {
@@ -129,48 +130,35 @@ export async function POST(req: Request) {
           return query + ' ' + data.choices[0].message.content;
         },
       },
-      storePoint: {
-        description: 'Save these critical details for future reference.',
+      addResource: {
+        description: `add a resource to your knowledge base.
+          If the user provides a random piece of knowledge unprompted, use this tool without asking for confirmation.`,
         parameters: z.object({
-          content: z.string(),
-          type: z.string(),
-          user_id: z.string(),
+          title: z.string(),
+          body: z.string(),
         }),
-        execute: async ({ content, type, user_id }) => {
-          const supabase = await createSupabaseServerClient();
-          const { data, error } = await supabase.from('point').insert([
-            {
-              id: uuid(),
-              content,
-              type,
-              user_id,
-            },
-          ]);
+        execute: async ({ title, body }) => {
+          const { error } = await createEmbedding(title, body);
           if (error) {
-            throw new Error(error.message);
+            return error.message;
           }
-          return data;
+          return `Resource added successfully: ${title} - ${body}`;
         },
       },
-      retrievePoints: {
-        description: 'Retrieve stored points for future reference.',
-        parameters: z.object({}),
-        execute: async ({}) => {
-          const supabase = await createSupabaseServerClient();
-          const {
-            data: { user },
-          } = await supabase.auth.getUser();
-          if (!user) {
-            return [];
+      getInformation: {
+        description: `get information from your knowledge base to answer questions.`,
+        parameters: z.object({
+          question: z.string().describe('the users question'),
+        }),
+        execute: async ({ question }) => {
+          const { data: documents } = await matchDocuments(question, 0.25, 3);
+          if (!documents) {
+            return 'I could not find any information on that topic.';
           }
-          const { data, error } = await supabase
-            .from('point')
-            .select('*')
-            .eq('user_id', user.id);
-          if (error) {
-            throw new Error(error.message);
+          if (documents.length === 0) {
+            return 'I could not find any information on that topic.';
           }
-          return data;
+          return documents.map(doc => doc.title + ' - ' + doc.body).join('\n');
         },
       },
     },

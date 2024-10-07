@@ -9,6 +9,38 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      documents: {
+        Row: {
+          body: string
+          embedding: Array<number> | null
+          id: number
+          title: string
+          user_id: string
+        }
+        Insert: {
+          body: string
+          embedding?: Array<number>  | null
+          id?: number
+          title: string
+          user_id?: string
+        }
+        Update: {
+          body?: string
+          embedding?: Array<number>  | null
+          id?: number
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "documents_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       message: {
         Row: {
           content: string
@@ -113,7 +145,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      match_documents: {
+        Args: {
+          query_embedding: string
+          match_threshold: number
+          match_count: number
+        }
+        Returns: {
+          id: number
+          title: string
+          body: string
+          similarity: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
