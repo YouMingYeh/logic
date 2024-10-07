@@ -43,6 +43,5 @@ export * from './src/components/ui/checkbox';
 export * from './src/components/ui/progress';
 export * from './src/components/ui/animated-circular-progress-bar';
 export * from './src/components/ui/chart';
-export * from './src/components/ui/canvas-confetti';
 
 export { cn } from './src/lib/utils';
