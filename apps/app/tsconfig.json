@@ -1,0 +1,9 @@
+{
+  "extends": "tsconfig/nextjs.json",
+  "compilerOptions": {
+    "plugins": [{ "name": "next" }]
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/app/project/[id]/actions/scraper.js"],
+  "exclude": ["node_modules"],
+  "paths": { "@next/third-parties/google": [ "./node_modules/@next/third-parties/dist/google" ] }
+}
