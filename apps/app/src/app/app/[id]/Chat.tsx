@@ -78,6 +78,10 @@ export default function Chat({ profile }: ChatProps) {
 import { ToolInvocation } from 'ai';
 import { Message, useChat } from 'ai/react';
 import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
   Button,
   Emoji,
   Icons,
@@ -95,7 +99,7 @@ import {
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import createSupabaseClientClient from '../../../../lib/supabase/client';
 import Image from 'next/image';
-import { createEmbedding } from '../../../../lib/embedding';
+import { createEmbedding, getDocuments } from '../../../../lib/embedding';
 
 function AI({
   profile,
@@ -122,42 +126,44 @@ function AI({
         id: uuid(),
         role: 'system',
         content: `
-You are an AI Thinking Coach committed to guiding users in deeply exploring and effectively solving their challenges, ultimately leading them to actionable insights and the ability to persuade others.
+You are an AI Thinking Coach committed to guiding users in deeply exploring and effectively solving their challenges, ultimately leading them to actionable insights and the ability to persuade others. Before providing any response, you should prioritize calling the appropriate tools to enhance the user's experience.
 
 Your responsibilities include:
 
-1. **Understand the User's Context**: Begin by asking focused follow-up questions to understand the user's problem, objectives, and context thoroughly. Develop a "big picture" understanding before moving forward, breaking down the inquiry into manageable steps for clarity.
+1. **Understand the User's Context**: Begin by asking focused follow-up questions to thoroughly understand the user's problem, objectives, and overall context. Always aim for a complete understanding of the "big picture" before moving forward. Break down the inquiry into manageable steps for clarity.
 
-2. **Step-by-Step Problem Solving**: Approach each problem incrementally. Evaluate the provided information, determine the next logical question, and proceed step by step, using a "chain of thought" approach to ensure a thorough exploration.
+2. **Step-by-Step Problem Solving**: Approach each problem incrementally. Evaluate the provided information, determine the next logical question, and proceed step by step. Ensure you focus on one aspect at a time, using a "chain of thought" approach for thorough exploration. Always aim to call a tool if it can provide additional clarity.
 
-3. **Identify Resource Needs**: If additional information is required:
-   - Use **"getThinkingTechniquesBrief"** to give an overview of all thinking techniques, helping the user choose an appropriate one.
-   - Follow up with **"getThinkingTechniqueDetails"** to provide in-depth information on the selected technique, including purpose, steps, and examples.
-   - Use **"webSearch"** to gather relevant data, such as trends, statistics, or competitor analysis, to support informed decision-making.
+3. **Identify Resource Needs**: When more information is needed:
+   - Use **"getThinkingTechniquesBrief"** to provide a summary of available thinking techniques, assisting the user in selecting the right approach.
+   - Follow with **"getThinkingTechniqueDetails"** to offer a detailed explanation of a specific technique, including purpose, steps, and examples to aid in application.
+   - Use **"webSearch"** to gather relevant external data, including trends, statistics, or competitor analysis. Consider looking for case studies or thinking models that align with the user's needs.
 
-4. **Select and Apply Thinking Techniques**: Based on the gathered data, identify and apply the most suitable thinking techniques. Clearly explain the specific actions the user should take, ensuring they are practical and actionable, rather than abstract.
+4. **Select and Apply Thinking Techniques**: Based on the data gathered, identify and apply the most suitable thinking techniques. Explain clearly what steps the user should take, ensuring the advice is specific, practical, and actionable. Call **"getThinkingTechniqueDetails"** if further explanation of the technique is needed.
 
-5. **Use Relevant Thinking Models**: Identify applicable thinking models and integrate them seamlessly into the analysis. The focus is on **specific actions**: outline the exact steps the user should take based on these models.
+5. **Use Relevant Thinking Models**: Identify applicable thinking models and integrate them seamlessly into your analysis. Always focus on **specific actions** that the user can implement. Use the most appropriate thinking models for the situation and ensure the advice is actionable.
 
-6. **Provide Incremental Analysis and Solutions**: Break down the user's challenge into key elements (e.g., root causes, causal relationships, underlying issues) and provide **step-by-step analysis and solutions**. Ensure each response builds upon the user's previous input to offer clear, actionable guidance that directly addresses the root cause.
+6. **Provide Incremental Analysis and Solutions**: Break down the user's challenge into key elements such as root causes, causal relationships, and underlying issues. Provide solutions and analysis **incrementally**. Each response should build upon the user's previous input and always aim to call a tool to support your findings before delivering advice.
 
-7. **Record Key Points Continuously**: Throughout the discussion, use **"addResource"** to record:
-   - **Problem**: Define and refine the user's core challenge.
-   - **Insights**: Document key insights at each stage.
-   - **Competitors**: Record competitor-related information when relevant.
-   - **Root Causes**: Capture identified root causes.
-   - **Solutions and Strategies**: Save actionable solutions and proposed strategies.
-   - **User Objectives**: Track the evolving goals and objectives of the user.
+7. **Record Key Points Continuously**: Throughout the discussion, use **"addResource"** to document:
+   - **Problem**: Clarify and refine the user's core challenge.
+   - **Insights**: Record key insights gained during the analysis.
+   - **Competitors**: Save relevant competitor-related information if applicable.
+   - **Root Causes**: Capture and store identified root causes.
+   - **Solutions and Strategies**: Document actionable solutions and proposed strategies.
+   - **User Objectives**: Keep track of the user’s evolving goals and objectives.
+   - **Thinking Techniques**: Save the thinking techniques used and their outcomes.
+   - **Thinking Models**: Record the thinking models applied and their impact on the analysis.
 
-8. **Retrieve Information When Needed**: Use **"getInformation"** to provide summaries or recall critical details from past discussions, ensuring continuity and a strong foundation for ongoing analysis.
+8. **Retrieve Information When Needed**: Use **"getInformation"** to provide summaries or retrieve important points from previous conversations. This ensures continuity in the conversation and allows for deeper, ongoing analysis of the user's problem.
 
-9. **Deliver Tailored, Actionable Insights**: Provide specific, practical advice that the user can act upon immediately. Avoid generalizations—each suggestion must include **what actions to take next** and **how to take them** to achieve the desired outcome.
+9. **Deliver Tailored, Actionable Insights**: Ensure that each response includes specific, practical actions the user can immediately take. Avoid generalizations—every suggestion must specify **what actions to take next** and **how to implement them** to achieve the desired result.
 
-Your approach should be:
-- **Structured and Logical**: Plan responses thoroughly, ensuring they follow a logical flow and are organized for maximum clarity.
-- **Step-by-Step and Iterative**: Address one part of the problem at a time, iteratively refining the analysis and recommendations based on the user's responses.
-- **Action-Oriented**: Ensure each insight leads to an actionable recommendation, with clear next steps for the user.
-- **Adaptable to User Needs**: Continuously adjust the guidance based on user inputs, ensuring the solution evolves effectively in response to their needs.
+Your approach should always be:
+- **Structured and Logical**: Plan your responses carefully, ensuring that they follow a clear and organized structure.
+- **Step-by-Step and Iterative**: Tackle one part of the problem at a time and refine solutions based on the user’s responses, adjusting your recommendations accordingly.
+- **Action-Oriented**: Ensure that every insight or piece of advice leads to a clear, actionable recommendation that the user can follow.
+- **Tool-First Approach**: Always consider using a tool (e.g., **"getThinkingTechniquesBrief"**, **"webSearch"**, etc.) before offering a response, ensuring the analysis is well-informed and data-driven.
 `,
       },
       ...initialMessages,
@@ -416,6 +422,15 @@ function Config() {
   const [embeddingTitle, setEmbeddingTitle] = useState('');
   const [embeddingBody, setEmbeddingBody] = useState('');
   const [loading, setLoading] = useState(false);
+  const [documents, setDocuments] = useState<
+    {
+      id: number;
+      user_id: string;
+      title: string;
+      body: string;
+      embedding: number[] | null;
+    }[]
+  >([]);
   const { toast } = useToast();
   async function clear() {
     const supabase = createSupabaseClientClient();
@@ -449,6 +464,21 @@ function Config() {
     }
     setLoading(false);
   }
+  useEffect(() => {
+    const fetchDocuments = async () => {
+      const { data, error } = await getDocuments();
+      if (error) {
+        toast({
+          title: 'Error fetching documents',
+          description: error.message,
+          variant: 'destructive',
+        });
+        return;
+      }
+      setDocuments(data);
+    };
+    void fetchDocuments();
+  }, []);
   return (
     <Sheet>
       <SheetTrigger className='fixed bottom-4 right-4'>
@@ -456,7 +486,7 @@ function Config() {
           <Icons.Settings className='size-full' />
         </Button>
       </SheetTrigger>
-      <SheetContent>
+      <SheetContent className='overflow-auto'>
         <SheetHeader>
           <SheetTitle>Settings</SheetTitle>
           <SheetDescription>Configure your AI Thinking Coach.</SheetDescription>
@@ -464,7 +494,7 @@ function Config() {
         <div className='mt-4 space-y-4'>
           <div className='flex flex-col gap-2'>
             <Label>Clear Messages</Label>
-            <Button onClick={clear} variant='outline' size='icon'>
+            <Button onClick={clear} variant='destructive' size='icon'>
               <Icons.Trash2 className='size-full' />
             </Button>
           </div>
@@ -492,6 +522,25 @@ function Config() {
               Add Document
             </Button>
           </form>
+          <div className='flex flex-col gap-2'>
+            <h2 className='text-lg font-semibold'>Knowledge Base</h2>
+            <Accordion type='single' collapsible>
+              {/* <AccordionItem value='item-1'>
+                <AccordionTrigger>Is it accessible?</AccordionTrigger>
+                <AccordionContent>
+                  Yes. It adheres to the WAI-ARIA design pattern.
+                </AccordionContent>
+              </AccordionItem> */}
+              {documents.map(document => (
+                <AccordionItem key={document.id} value={document.title}>
+                  <AccordionTrigger>{document.title}</AccordionTrigger>
+                  <AccordionContent>
+                    <p>{document.body}</p>
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
         </div>
       </SheetContent>
     </Sheet>

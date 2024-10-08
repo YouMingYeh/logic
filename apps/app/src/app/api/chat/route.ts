@@ -164,6 +164,9 @@ export async function POST(req: Request) {
       },
     },
     maxSteps: 10,
+    presencePenalty: 1,
+    frequencyPenalty: 1,
+
   });
 
   return result.toDataStreamResponse();
