@@ -83,3 +83,15 @@ export async function getDocuments() {
 
   return supabase.from('documents').select('*').eq('user_id', user.id);
 }
+
+export async function deleteDocument(id: number) {
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return { data: null, error: new Error('User not authenticated') };
+  }
+
+  return supabase.from('documents').delete().eq('id', id).eq('user_id', user.id);
+}

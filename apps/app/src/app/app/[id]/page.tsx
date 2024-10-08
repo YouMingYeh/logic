@@ -34,7 +34,7 @@ export default function Page({
   }
 
   return (
-    <div className='relative flex h-full w-full max-w-2xl flex-col items-center justify-start gap-4 overflow-auto py-8'>
+    <div className='relative flex h-full w-full max-w-xl  md:max-w-2xl flex-col items-center justify-start gap-4 overflow-auto py-8'>
       <Chat profile={profile} />
     </div>
   );

@@ -148,7 +148,7 @@ export async function POST(req: Request) {
         },
       },
       getInformation: {
-        description: `Retrieve relevant information from your knowledge base in response to user queries. This helps provide continuity and informed insights based on stored knowledge.`,
+        description: `Retrieve relevant information from your knowledge base in response to user queries. This helps provide continuity and informed insights based on stored knowledge. Always call this before answering!`,
         parameters: z.object({
           question: z.string().describe('The question the user wants answered based on stored information.'),
         }),
