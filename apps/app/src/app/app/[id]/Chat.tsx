@@ -220,7 +220,7 @@ Your approach should always be:
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const handleScrollToBottom = () => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    bottomRef.current?.scrollIntoView();
   };
 
   useEffect(() => {
@@ -244,11 +244,18 @@ Your approach should always be:
   }, []);
 
   useEffect(() => {
+    handleScrollToBottom();
+  }, []);
+
+  useEffect(() => {
+    if (bottomVisible) {
+      handleScrollToBottom();
+    }
     if (messages.length === 0) {
       return;
     }
-    handleScrollToBottom();
     const lastMessage = messages[messages.length - 1];
+
     if (lastMessage.role !== 'user') {
       return;
     }
@@ -261,7 +268,7 @@ Your approach should always be:
 
   return (
     <>
-      <div className='h-fit w-full px-2 pb-16 relative'>
+      <div className='relative h-fit w-full px-2 pb-16'>
         {messages?.length === 1 && (
           <div className='w-full space-y-4 pt-4'>
             <Image
@@ -288,7 +295,7 @@ Your approach should always be:
                     : 'mr-auto max-w-[80%] text-left'
                 }`}
               >
-                <div className='mx-auto flex space-x-4 px-4 relative'>
+                <div className='relative mx-auto flex space-x-4 px-4'>
                   <div className='flex-shrink-0'>
                     {m.role === 'user' ? null : (
                       <div className='flex-shrink-0'>
@@ -300,7 +307,7 @@ Your approach should always be:
                     <div
                       className='prose max-w-xl -translate-y-4'
                       dangerouslySetInnerHTML={{
-                      __html: marked.parse(m.content),
+                        __html: marked.parse(m.content),
                       }}
                     ></div>
                     {m.toolInvocations?.map(

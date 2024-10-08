@@ -86,7 +86,10 @@ export async function POST(req: Request) {
         }: {
           technique: keyof typeof thinkingMethodsDetails;
         }) => {
-          return thinkingMethodsDetails[technique];
+          const resultString = `${thinkingMethodsDetails[technique].description}\n\nSteps:\n${thinkingMethodsDetails[technique].steps
+            .map((step) => `- ${step.step}: ${step.description}`)
+            .join('\n')}`;
+          return resultString;
         },
       },
       searchWeb: {
