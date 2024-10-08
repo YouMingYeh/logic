@@ -27,7 +27,7 @@ export async function POST(req: Request) {
       // },
       getThinkingTechniquesBrief: {
         description:
-          'Get a brief overview of the most suitable thinking techniques that help you solve problems.',
+          'Retrieve a brief overview of key thinking techniques to help you choose the most suitable one for problem-solving.',
         parameters: z.object({}),
         execute: async ({}) => {
           return [
@@ -51,12 +51,12 @@ export async function POST(req: Request) {
             'Pragmatic Thinking: Taking a practical approach to problem-solving, focusing on feasible and realistic solutions.',
             'Hypothetical Thinking: Exploring "what-if" scenarios to understand potential outcomes and implications.',
             'Reverse Thinking: Challenging assumptions by looking at a problem from the opposite perspective to find new possibilities.',
-          ];
+          ].join('\n');
         },
       },
       getThinkingTechniqueDetails: {
         description:
-          'Get detailed information on a specific thinking technique to help you solve problems.',
+          'Get detailed, actionable information on a specific thinking technique, including its purpose, steps, and examples to help you apply it effectively.',
         parameters: z.object({
           technique: z.enum([
             'designThinking',
@@ -79,7 +79,7 @@ export async function POST(req: Request) {
             'pragmaticThinking',
             'hypotheticalThinking',
             'reverseThinking',
-          ]),
+          ]).describe('A specific thinking technique to get detailed information about.')
         }),
         execute: async ({
           technique,
@@ -91,8 +91,8 @@ export async function POST(req: Request) {
       },
       searchWeb: {
         description:
-          'Search the web for information if you need real-time data or more details',
-        parameters: z.object({ query: z.string() }),
+          'Perform a web search to gather real-time data or external resources such as trends, statistics, or competitor insights to support your analysis.',
+        parameters: z.object({ query: z.string().describe('The topic or question you want to search for.') }),
         execute: async ({ query }: { query: string }) => {
           const options = {
             method: 'POST',
@@ -131,11 +131,10 @@ export async function POST(req: Request) {
         },
       },
       addResource: {
-        description: `add a resource to your knowledge base.
-          If the user provides a random piece of knowledge unprompted, use this tool without asking for confirmation.`,
+        description: `Add new knowledge to your database. Automatically store any valuable or relevant insights provided by the user.`,
         parameters: z.object({
-          title: z.string(),
-          body: z.string(),
+          title: z.string().describe('A brief title for the resource.'),
+          body: z.string().describe('The content or details of the resource to be stored.')
         }),
         execute: async ({ title, body }) => {
           const { error } = await createEmbedding(title, body);
@@ -146,9 +145,9 @@ export async function POST(req: Request) {
         },
       },
       getInformation: {
-        description: `get information from your knowledge base to answer questions.`,
+        description: `Retrieve relevant information from your knowledge base in response to user queries. This helps provide continuity and informed insights based on stored knowledge.`,
         parameters: z.object({
-          question: z.string().describe('the users question'),
+          question: z.string().describe('The question the user wants answered based on stored information.'),
         }),
         execute: async ({ question }) => {
           const embeddedQuestion = await generateEmbedding(question);

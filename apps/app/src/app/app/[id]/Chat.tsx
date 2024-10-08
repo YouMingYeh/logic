@@ -247,12 +247,12 @@ Your approach should always be:
     if (messages.length === 0) {
       return;
     }
+    handleScrollToBottom();
     const lastMessage = messages[messages.length - 1];
     if (lastMessage.role !== 'user') {
       return;
     }
     void syncMessages(lastMessage);
-    handleScrollToBottom();
   }, [messages]);
 
   useEffect(() => {
@@ -261,7 +261,7 @@ Your approach should always be:
 
   return (
     <>
-      <div className='h-fit w-full px-2 pb-16'>
+      <div className='h-fit w-full px-2 pb-16 relative'>
         {messages?.length === 1 && (
           <div className='w-full space-y-4 pt-4'>
             <Image
@@ -288,7 +288,7 @@ Your approach should always be:
                     : 'mr-auto max-w-[80%] text-left'
                 }`}
               >
-                <div className='mx-auto flex max-w-4xl space-x-4 px-4'>
+                <div className='mx-auto flex space-x-4 px-4 relative'>
                   <div className='flex-shrink-0'>
                     {m.role === 'user' ? null : (
                       <div className='flex-shrink-0'>
@@ -296,11 +296,11 @@ Your approach should always be:
                       </div>
                     )}
                   </div>
-                  <div className='flex-grow'>
+                  <div className=''>
                     <div
-                      className='prose max-w-none -translate-y-4'
+                      className='prose max-w-xl -translate-y-4'
                       dangerouslySetInnerHTML={{
-                        __html: marked.parse(m.content),
+                      __html: marked.parse(m.content),
                       }}
                     ></div>
                     {m.toolInvocations?.map(
