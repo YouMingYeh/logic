@@ -3,7 +3,11 @@ import { convertToCoreMessages, streamText } from 'ai';
 import { late, z } from 'zod';
 import createSupabaseServerClient from '../../../../lib/supabase/server';
 import { v4 as uuid } from 'uuid';
-import { createEmbedding, generateEmbedding, matchDocuments } from '../../../../lib/embedding';
+import {
+  createEmbedding,
+  generateEmbedding,
+  matchDocuments,
+} from '../../../../lib/embedding';
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
@@ -15,16 +19,161 @@ export async function POST(req: Request) {
     model: openai('gpt-4o'),
     messages: convertToCoreMessages(messages),
     tools: {
-      // getWeatherInformation: {
-      //   description: 'show the weather in a given city to the user',
-      //   parameters: z.object({ city: z.string() }),
-      //   execute: async ({}: { city: string }) => {
-      //     const weatherOptions = ['sunny', 'cloudy', 'rainy', 'snowy', 'windy'];
-      //     return weatherOptions[
-      //       Math.floor(Math.random() * weatherOptions.length)
-      //     ];
-      //   },
-      // },
+      saveInsight: {
+        description:
+          'Store valuable insights or information gathered during the conversation for future reference.',
+        parameters: z.object({
+          title: z.string().describe('A brief title for the insight.'),
+          description: z
+            .string()
+            .describe('An abstract or summary of the insight.'),
+          content: z
+            .string()
+            .describe('The content or details of the insight.'),
+          emoji: z
+            .string()
+            .nullable()
+            .describe('An emoji to represent the insight.'),
+          type: z
+            .enum([
+              'descriptive',
+              'diagnostic',
+              'predictive',
+              'prescriptive',
+              'strategic',
+              'operational',
+              'customer',
+              'behavioral',
+              'competitive',
+              'cultural',
+              'innovation',
+            ])
+            .describe('The type or category of the insight.'),
+        }),
+        execute: async ({ insight }) => {
+          const supabase = await createSupabaseServerClient();
+          const {
+            data: { user },
+          } = await supabase.auth.getUser();
+          if (!user) {
+            return 'User not found';
+          }
+          const { error } = await supabase.from('insight').insert([
+            {
+              id: uuid(),
+              user_id: user.id,
+              ...insight,
+            },
+          ]);
+          if (error) {
+            return error.message;
+          }
+          return (
+            'Insight saved successfully: ' +
+            insight.title +
+            ' - ' +
+            insight.content
+          );
+        },
+      },
+      getInsights: {
+        description:
+          'Retrieve the insights or information gathered during the conversation.',
+        parameters: z.object({
+          type: z
+            .enum([
+              'descriptive',
+              'diagnostic',
+              'predictive',
+              'prescriptive',
+              'strategic',
+              'operational',
+              'customer',
+              'behavioral',
+              'competitive',
+              'cultural',
+              'innovation',
+            ])
+            .nullable()
+            .describe(
+              "Filter if you're looking for a specific type of insight.",
+            ),
+        }),
+        execute: async ({}) => {
+          const supabase = await createSupabaseServerClient();
+          const {
+            data: { user },
+          } = await supabase.auth.getUser();
+          if (!user) {
+            return 'User not found';
+          }
+          const { data: insights, error } = await supabase
+            .from('insight')
+            .select('*')
+            .eq('user_id', user.id);
+          if (error) {
+            return error.message;
+          }
+          if (insights.length === 0) {
+            return 'No insights found.';
+          }
+          return insights.map(
+            insight =>
+              `${insight.title} - ${insight.content} (${insight.type})`,
+          ).join('\n');
+        },
+      },
+      getThinkingModels: {
+        description:
+          'Retrieve a list of thinking models that can be applied to the problem at hand.',
+        parameters: z.object({
+          problem: z
+            .string()
+            .describe('The problem or challenge you are facing.'),
+        }),
+        execute: async ({ problem }: { problem: string }) => {
+          const options = {
+            method: 'POST',
+            headers: {
+              Authorization:
+                'Bearer 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',
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              model: 'llama-3.1-sonar-small-128k-online',
+              messages: [
+                { role: 'system', content: 'Be as detailed as possible.' },
+                {
+                  role: 'user',
+                  content:
+                    "I'm facing the following problem: " +
+                    problem +
+                    '. Please suggest some thinking models that can help me approach it.',
+                },
+              ],
+              temperature: 0.2,
+              top_p: 0.9,
+              return_citations: true,
+              search_domain_filter: ['perplexity.ai'],
+              return_images: false,
+              return_related_questions: false,
+              search_recency_filter: 'month',
+              top_k: 0,
+              stream: false,
+              presence_penalty: 0,
+              frequency_penalty: 1,
+            }),
+          };
+
+          const response = await fetch(
+            'https://api.perplexity.ai/chat/completions',
+            options,
+          );
+          const data = await response.json();
+
+          return data.choices[0].message.content;
+        },
+      },
       getThinkingTechniquesBrief: {
         description:
           'Retrieve a brief overview of key thinking techniques to help you choose the most suitable one for problem-solving.',
@@ -58,36 +207,42 @@ export async function POST(req: Request) {
         description:
           'Get detailed, actionable information on a specific thinking technique, including its purpose, steps, and examples to help you apply it effectively.',
         parameters: z.object({
-          technique: z.enum([
-            'designThinking',
-            'systemThinking',
-            'integratedThinking',
-            'criticalThinking',
-            'lateralThinking',
-            'divergentThinking',
-            'convergentThinking',
-            'intuitiveThinking',
-            'logicalThinking',
-            'creativeThinking',
-            'metaThinking',
-            'analyticalThinking',
-            'holisticThinking',
-            'strategicThinking',
-            'empatheticThinking',
-            'evidenceBasedThinking',
-            'causalThinking',
-            'pragmaticThinking',
-            'hypotheticalThinking',
-            'reverseThinking',
-          ]).describe('A specific thinking technique to get detailed information about.')
+          technique: z
+            .enum([
+              'designThinking',
+              'systemThinking',
+              'integratedThinking',
+              'criticalThinking',
+              'lateralThinking',
+              'divergentThinking',
+              'convergentThinking',
+              'intuitiveThinking',
+              'logicalThinking',
+              'creativeThinking',
+              'metaThinking',
+              'analyticalThinking',
+              'holisticThinking',
+              'strategicThinking',
+              'empatheticThinking',
+              'evidenceBasedThinking',
+              'causalThinking',
+              'pragmaticThinking',
+              'hypotheticalThinking',
+              'reverseThinking',
+            ])
+            .describe(
+              'A specific thinking technique to get detailed information about.',
+            ),
         }),
         execute: async ({
           technique,
         }: {
           technique: keyof typeof thinkingMethodsDetails;
         }) => {
-          const resultString = `${thinkingMethodsDetails[technique].description}\n\nSteps:\n${thinkingMethodsDetails[technique].steps
-            .map((step) => `- ${step.step}: ${step.description}`)
+          const resultString = `${
+            thinkingMethodsDetails[technique].description
+          }\n\nSteps:\n${thinkingMethodsDetails[technique].steps
+            .map(step => `- ${step.step}: ${step.description}`)
             .join('\n')}`;
           return resultString;
         },
@@ -95,7 +250,11 @@ export async function POST(req: Request) {
       searchWeb: {
         description:
           'Perform a web search to gather real-time data or external resources such as trends, statistics, or competitor insights to support your analysis.',
-        parameters: z.object({ query: z.string().describe('The topic or question you want to search for.') }),
+        parameters: z.object({
+          query: z
+            .string()
+            .describe('The topic or question you want to search for.'),
+        }),
         execute: async ({ query }: { query: string }) => {
           const options = {
             method: 'POST',
@@ -137,7 +296,9 @@ export async function POST(req: Request) {
         description: `Add new knowledge to your database. Automatically store any valuable or relevant insights provided by the user.`,
         parameters: z.object({
           title: z.string().describe('A brief title for the resource.'),
-          body: z.string().describe('The content or details of the resource to be stored.')
+          body: z
+            .string()
+            .describe('The content or details of the resource to be stored.'),
         }),
         execute: async ({ title, body }) => {
           const { error } = await createEmbedding(title, body);
@@ -150,11 +311,19 @@ export async function POST(req: Request) {
       getInformation: {
         description: `Retrieve relevant information from your knowledge base in response to user queries. This helps provide continuity and informed insights based on stored knowledge. Always call this before answering!`,
         parameters: z.object({
-          question: z.string().describe('The question the user wants answered based on stored information.'),
+          question: z
+            .string()
+            .describe(
+              'The question the user wants answered based on stored information.',
+            ),
         }),
         execute: async ({ question }) => {
           const embeddedQuestion = await generateEmbedding(question);
-          const { data: documents, error } = await matchDocuments(embeddedQuestion, 0.5, 3);
+          const { data: documents, error } = await matchDocuments(
+            embeddedQuestion,
+            0.5,
+            3,
+          );
           if (error) {
             return error.message;
           }

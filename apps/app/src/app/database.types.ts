@@ -19,21 +19,62 @@ export type Database = {
         }
         Insert: {
           body: string
-          embedding?: Array<number>  | null
-          id?: number
+          embedding?:  Array<number> | null
+          id?: never
           title: string
           user_id?: string
         }
         Update: {
           body?: string
-          embedding?: Array<number>  | null
-          id?: number
+          embedding?:  Array<number> | null
+          id?: never
           title?: string
           user_id?: string
         }
         Relationships: [
           {
             foreignKeyName: "documents_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      insight: {
+        Row: {
+          content: string
+          created_at: string
+          description: string
+          emoji: string
+          id: string
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          description: string
+          emoji: string
+          id?: string
+          title: string
+          type: string
+          user_id?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          description?: string
+          emoji?: string
+          id?: string
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "insight_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profile"
@@ -147,7 +188,7 @@ export type Database = {
     Functions: {
       match_documents: {
         Args: {
-          query_embedding: Array<number>
+          query_embedding:  Array<number>
           match_threshold: number
           match_count: number
         }
@@ -156,6 +197,7 @@ export type Database = {
           title: string
           body: string
           similarity: number
+          user_id: string
         }[]
       }
     }

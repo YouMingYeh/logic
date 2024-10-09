@@ -64,6 +64,8 @@ import {
   MoveRight,
   Trash2,
   Copy,
+  Lightbulb,
+  Zap,
 } from 'lucide-react';
 import { forwardRef } from 'react';
 
@@ -336,6 +338,8 @@ const Google: LucideIcon = forwardRef((props: LucideProps, ref) => (
 export type Icon = LucideIcon;
 
 export const Icons = {
+  Zap,
+  Lightbulb,
   RefreshCcw,
   Copy,
   Trash2,

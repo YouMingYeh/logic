@@ -20,20 +20,61 @@ export type Database = {
         Insert: {
           body: string
           embedding?: string | null
-          id?: number
+          id?: never
           title: string
           user_id?: string
         }
         Update: {
           body?: string
           embedding?: string | null
-          id?: number
+          id?: never
           title?: string
           user_id?: string
         }
         Relationships: [
           {
             foreignKeyName: "documents_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      insight: {
+        Row: {
+          content: string
+          created_at: string
+          description: string
+          emoji: string
+          id: string
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          description: string
+          emoji: string
+          id?: string
+          title: string
+          type: string
+          user_id?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          description?: string
+          emoji?: string
+          id?: string
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "insight_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profile"
@@ -156,6 +197,7 @@ export type Database = {
           title: string
           body: string
           similarity: number
+          user_id: string
         }[]
       }
     }

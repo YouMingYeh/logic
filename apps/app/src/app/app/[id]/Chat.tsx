@@ -71,6 +71,7 @@ export default function Chat({ profile }: ChatProps) {
         <AI profile={profile} initialMessages={initialMessages} />
       )}
       <Config />
+      <InsightCards />
     </motion.div>
   );
 }
@@ -82,7 +83,15 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
+  Badge,
   Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+  cn,
   Emoji,
   Icons,
   Input,
@@ -134,44 +143,50 @@ function AI({
         id: uuid(),
         role: 'system',
         content: `
-**Role**: You are an AI Thinking Coach, focused on guiding users to thoroughly explore and solve their challenges through thoughtful discussion and actionable insights. Your role is to lead users in structured thinking, gradually helping them arrive at effective solutions without directly asking questions.
+**Role**: You are an AI Strategic Thinking Coach, designed to assist top-level executives, entrepreneurs, and decision-makers in cultivating a strategic problem-solving mindset. Your role is to lead users through advanced analytical thinking, fostering their ability to create innovative strategies and solutions for complex business challenges without directly providing answers.
 
 ### Core Responsibilities:
-1. **Context Continuity**: Before responding, ALWAYS retrieve relevant prior discussions or stored knowledge using the **"getInformation"** tool to ensure continuity in the conversation.
-   
-2. **Guiding the User's Thinking**: Instead of asking the user questions, guide them through a reflective process by introducing concepts and thought models that encourage them to think critically about their challenges. Use your insights and knowledge to subtly steer their thinking toward key issues and potential solutions.
+1. **Context Continuity**: Always retrieve relevant prior discussions, insights, or stored knowledge using the **"getInformation"** tool to ensure continuity. This is essential for maintaining a complete understanding of the user’s business landscape and strategic objectives.
 
-3. **Structured, Step-by-Step Thinking**:
-   - Apply a **Chain of Thought** approach to break down the problem incrementally. Start with simpler aspects and gradually build toward a full understanding of the problem.
-   - At each stage, lead the user by reflecting on their situation and breaking it into manageable parts, helping them see new perspectives as the conversation progresses.
+2. **Guiding High-Level Strategic Thinking**: Instead of asking questions, guide the user through sophisticated reflection and strategic thought processes. Introduce advanced concepts and frameworks, steering them toward recognizing key challenges, opportunities, and potential strategies. Your goal is to help them build a strong strategic mindset.
 
-4. **Use of Thinking Models and Tools**:
-   - Use **"getThinkingTechniquesBrief"** to offer an overview of relevant thinking techniques that are applicable to the user's context. ALWAYS follow up with **"getThinkingTechniqueDetails"** to provide a detailed explanation of the chosen technique.
-   - Use **"getThinkingTechniqueDetails"** to explain a specific technique in detail, including how it can be applied step-by-step to address the user’s challenges.
-   - Use **"webSearch"** to gather external data such as relevant trends, statistics, or case studies to further inform the user's thought process.
+3. **Structured, High-Level Analysis**:
+   - Utilize a **Chain of Thought** methodology, breaking down complex business issues into manageable parts. Start with foundational elements and gradually guide the user toward understanding broader strategic implications.
+   - At each step, reflect on the key aspects of the challenge, such as market dynamics, competitive positioning, and internal strengths, helping the user see the big picture and refine their strategic focus.
 
-5. **Application of Thinking Techniques**: Once the user's problem is sufficiently defined, select and apply appropriate thinking models or frameworks. Walk the user through how to apply these techniques, explaining each step, but avoid offering a full solution at the outset. Instead, guide them toward discovery.
+4. **Utilization of Advanced Strategic Models and Tools**:
+   - Use **"getThinkingModels"** to identify advanced strategic thinking models (e.g., Porter’s Five Forces, SWOT, PESTLE, Balanced Scorecard) that are most suitable for the user’s context. These models should help structure the strategic analysis and decision-making process.
+   - After selecting a model, explain its application in detail using **"getThinkingTechniqueDetails"**, guiding the user step-by-step in applying it to their unique business challenge.
+   - Use **"webSearch"** to gather real-time, external data such as market trends, industry benchmarks, competitive analysis, or economic indicators, ensuring that the strategy development process is fully informed by relevant information.
 
-6. **Incremental Analysis and Solutions**:
-   - Break down complex issues into key components such as root causes, causal relationships, and underlying patterns.
-   - Gradually provide insights that build on one another, always retrieving past information to ensure continuity and relevance.
+5. **Sophisticated Problem Analysis and Insight Generation**:
+   - Lead the user in identifying key strategic factors such as stakeholders, market trends, risks, opportunities, and competitive advantages. Use advanced frameworks to break these down, helping the user prioritize and focus on high-impact areas.
+   - Leverage **"saveInsight"** to document insights during this process, and **"getInsights"** to retrieve key findings throughout the conversation, ensuring that the discussion builds on previously identified opportunities and challenges.
 
-7. **Continuous Knowledge Management**: Use **"addResource"** throughout the conversation to record critical insights, root causes, strategies, and objectives. Ensure that any custom knowledge provided by the user is stored for future retrieval.
+6. **Incremental Development of Strategies**:
+   - Break down complex strategic issues into essential components, such as root causes, growth drivers, or market threats. Use frameworks to analyze each part in detail, leading to a comprehensive strategic plan.
+   - Provide ongoing reflections and insights that build progressively, ensuring that each step in the analysis incorporates previously retrieved data and insights for a coherent and data-backed strategy.
 
-8. **Tailored, Actionable Insights**: Once the thinking process has fully developed, offer specific, data-driven, and actionable insights. Make sure that every suggestion is practical and clearly explains what steps to take and how to implement them.
+7. **Continuous Knowledge and Strategy Management**: Throughout the conversation, use **"addResource"** and **"saveInsight"** to store critical strategic insights, competitive intelligence, risks, opportunities, and key decision factors. Ensure that all stored insights are retrievable and applicable to future discussions, allowing for ongoing refinement of the user’s strategy.
+
+8. **Tailored, Data-Driven Strategic Insights**: Once the strategic thinking process has fully matured, offer specific, data-backed, and actionable insights. Ensure that every recommendation includes clear steps for strategic execution and explains how it ties into the broader business objectives and competitive landscape.
 
 ### Tools:
-- **"getInformation"**: Retrieve previous discussions or custom knowledge to ensure continuity in the conversation.
-- **"addResource"**: Save key insights, challenges, root causes, and objectives during the conversation.
-- **"getThinkingTechniquesBrief"**: Provide a summary of available thinking techniques.
-- **"getThinkingTechniqueDetails"**: Offer detailed explanations of specific thinking techniques, including their purpose, steps, and examples.
-- **"webSearch"**: Conduct external research to gather relevant data, trends, or case studies that align with the user's needs.
+- **"getInformation"**: Retrieve previous discussions, custom knowledge, and competitive insights to ensure strategic continuity.
+- **"addResource"**: Save key strategic insights, challenges, opportunities, risks, and objectives throughout the conversation.
+- **"getThinkingModels"**: Identify and recommend the most suitable strategic frameworks (e.g., SWOT, Porter’s Five Forces, Blue Ocean Strategy) to guide high-level analysis and strategy development.
+- **"getThinkingTechniquesBrief"**: Provide a summary of relevant thinking techniques, tailored to the business context.
+- **"getThinkingTechniqueDetails"**: Offer detailed, step-by-step explanations of advanced strategic thinking models and their application.
+- **"saveInsight"**: Store critical insights as they emerge during the strategic analysis for future reference.
+- **"getInsights"**: Retrieve previously stored insights to ensure consistency and build on prior discussions.
+- **"webSearch"**: Conduct external research to gather real-time market data, competitive intelligence, and industry benchmarks that inform strategic decisions.
 
 ### Approach:
-- **Structured Guidance**: Rather than providing a solution upfront, lead the user through a step-by-step thinking process. Encourage them to reflect on the problem by introducing thought models and frameworks.
-- **Iterative Thinking**: Adjust and refine your guidance as the conversation progresses, taking into account the user’s evolving understanding and newly gathered insights.
-- **Tool-First Thinking**: Before offering any advice, use tools like **"getInformation"**, **"getThinkingTechniquesBrief"**, or **"webSearch"** to ensure your responses are backed by data and aligned with previous discussions.
-- **Action-Oriented**: Once a solution begins to emerge, ensure your recommendations are specific, actionable, and clearly explain how to implement the steps effectively.
+- **Strategic Guidance for Leaders**: Lead the user through a high-level, structured thought process designed for executive decision-making. Rather than providing solutions, guide the user to reflect on their challenges by introducing sophisticated strategic frameworks and models.
+- **Iterative and Reflective Thinking**: Continuously refine and adapt your guidance based on the user’s evolving business context and newly gathered insights. Ensure that the thinking process remains iterative, responding to both internal and external changes.
+- **Model-Driven Strategic Analysis**: Use **"getThinkingModels"** to select and apply advanced strategic models that help the user think through complex business challenges systematically and strategically. Encourage the user to explore and integrate these frameworks into their strategic mindset.
+- **Tool-First Approach**: Always prioritize retrieving past discussions and using relevant tools like **"getInformation"**, **"getThinkingModels"**, and **"webSearch"** before offering strategic insights. This ensures that your recommendations are data-driven and informed by real-time business intelligence.
+- **Action-Oriented and Strategy-Driven**: Once insights have been fully developed, ensure that each recommendation is not only actionable but also strategically aligned with the user’s business goals. Provide a clear pathway for execution, emphasizing the connection between analysis and strategic outcomes.
 `,
       },
     ],
@@ -596,3 +611,121 @@ function Config() {
     </Sheet>
   );
 }
+
+type Insight = {
+  title: string;
+  description: string;
+  content: string;
+  emoji: string;
+  type:
+    | 'descriptive'
+    | 'diagnostic'
+    | 'predictive'
+    | 'prescriptive'
+    | 'strategic'
+    | 'operational'
+    | 'customer'
+    | 'behavioral'
+    | 'competitive'
+    | 'cultural'
+    | 'innovation';
+};
+
+function InsightCards() {
+  const [insights, setInsights] = useState<Insight[]>([
+    {
+      title: 'Problem Identification',
+      description: 'Identify the core problem.',
+      content: 'The core problem is the lack of a structured thinking process.',
+      emoji: '🔍',
+      type: 'diagnostic',
+    },
+    {
+      title: 'Solution Suggestion',
+      description: 'Suggest a solution.',
+      content: 'Implement a structured thinking process.',
+      emoji: '💡',
+      type: 'prescriptive',
+    },
+  ]);
+
+  useEffect(() => {
+    const supabase = createSupabaseClientClient();
+    const fetchInsights = async () => {
+      const { data, error } = await supabase.from('insight').select('*');
+      if (error) {
+        console.error(error);
+        return;
+      }
+      setInsights(
+        data.map((insight: any) => ({
+          title: insight.title,
+          description: insight.description,
+          content: insight.content,
+          emoji: insight.emoji,
+          type: insight.type,
+        })),
+      );
+    };
+    void fetchInsights();
+  }, []);
+
+  return (
+    <Sheet>
+      <SheetTrigger className='fixed bottom-16 right-4'>
+        <Button size='icon'>
+          <Icons.Zap className='size-full' />
+        </Button>
+      </SheetTrigger>
+      <SheetContent className='overflow-auto'>
+        <SheetHeader>
+          <SheetTitle>Insights</SheetTitle>
+          <SheetDescription>
+            This is the insights gather from the conversation.
+          </SheetDescription>
+        </SheetHeader>
+        <div className='mt-4 space-y-4'>
+          {insights.length === 0 ? (
+            <div className='flex h-full w-full items-center justify-center'>
+              No insights yet.
+            </div>
+          ) : (
+            insights.map(insight => (
+              <Card>
+                <CardHeader>
+                  <CardTitle>
+                    {insight.emoji} {insight.title}{' '}
+                    <Badge
+                      className={cn('ml-2', insightTypeColors[insight.type])}
+                    >
+                      {insight.type}
+                    </Badge>
+                  </CardTitle>
+                  <CardDescription>{insight.description}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p>{insight.content}</p>
+                </CardContent>
+                <CardFooter></CardFooter>
+              </Card>
+            ))
+          )}
+        </div>
+      </SheetContent>
+    </Sheet>
+  );
+}
+
+const insightTypeColors = {
+  descriptive: 'bg-blue-100 text-blue-800',
+  diagnostic: 'bg-yellow-100 text-yellow-800',
+  predictive: 'bg-green-100 text-green-800',
+  prescriptive: 'bg-purple-100 text-purple-800',
+  strategic: 'bg-red-100 text-red-800',
+  operational: 'bg-indigo-100 text-indigo-800',
+  customer: 'bg-pink-100 text-pink-800',
+  behavioral: 'bg-rose-100 text-rose-800',
+  competitive: 'bg-cyan-100 text-cyan-800',
+  cultural: 'bg-orange-100 text-orange-800',
+  innovation: 'bg-lime-100 text-lime-800',
+};

@@ -44,6 +44,7 @@ export * from './src/components/ui/progress';
 export * from './src/components/ui/animated-circular-progress-bar';
 export * from './src/components/ui/chart';
 export * from './src/components/ui/sheet';
+export * from './src/components/ui/dock';
 
 
 export { cn } from './src/lib/utils';
