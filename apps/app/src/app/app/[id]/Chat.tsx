@@ -215,11 +215,29 @@ function AI({
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
   const [isTooltipVisible, setIsTooltipVisible] = useState(false);
   const [quote, setQuote] = useState('');
+  const [composition, setComposition] = useState(false);
 
   const [bottomVisible, setBottomVisible] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    document.addEventListener('compositionstart', () => {
+      setComposition(true);
+    })
+    document.addEventListener('compositionend', () => {
+      setComposition(false);
+    })
+    return () => {
+      document.removeEventListener('compositionstart', () => {
+        setComposition(true);
+      })
+      document.removeEventListener('compositionend', () => {
+        setComposition(false);
+      })
+    }
+  }, []);
 
   const handleTextSelection = useCallback(() => {
     const selection = window.getSelection();
@@ -544,7 +562,7 @@ function AI({
               handleInputChange(e);
             }}
             onKeyDown={e => {
-              if (e.key === 'Enter' && !e.shiftKey) {
+              if (e.key === 'Enter' && !e.shiftKey && !composition) {
                 e.preventDefault();
                 const fullMessage = quote ? `> ${quote}\n\n${input}` : input;
                 append({
