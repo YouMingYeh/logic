@@ -63,6 +63,7 @@ import {
   Network,
   MoveRight,
   Trash2,
+  Copy,
 } from 'lucide-react';
 import { forwardRef } from 'react';
 
@@ -335,6 +336,8 @@ const Google: LucideIcon = forwardRef((props: LucideProps, ref) => (
 export type Icon = LucideIcon;
 
 export const Icons = {
+  RefreshCcw,
+  Copy,
   Trash2,
   MoveRight,
   Network,
@@ -348,7 +351,6 @@ export const Icons = {
   Library: LibraryBig,
   Send,
   Rocket,
-  RefreshCcw,
   Check,
   Mail,
   Facebook,

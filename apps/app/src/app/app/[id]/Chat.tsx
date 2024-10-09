@@ -104,6 +104,7 @@ import {
   deleteDocument,
   getDocuments,
 } from '../../../../lib/embedding';
+import CopyButton from '../../../components/other/copy-button';
 
 function AI({
   profile,
@@ -119,6 +120,7 @@ function AI({
     handleSubmit,
     addToolResult,
     isLoading,
+    reload,
   } = useChat({
     maxSteps: 10,
     // run client-side tools that are automatically executed:
@@ -303,17 +305,32 @@ function AI({
                   <div className='flex-shrink-0'>
                     {m.role === 'user' ? null : (
                       <div className='flex-shrink-0'>
-                        <Emoji name='robot' className='h-8 w-8' />
+                        <Emoji name='light-bulb' className='h-8 w-8  translate-y-4' />
                       </div>
                     )}
                   </div>
                   <div className=''>
                     <div
-                      className='prose max-w-xl -translate-y-4'
+                      className='prose max-w-xl'
                       dangerouslySetInnerHTML={{
                         __html: marked.parse(m.content),
                       }}
-                    ></div>
+                    />
+                    {m.role === 'assistant' && !isLoading && m.content && (
+                      <>
+                      <CopyButton text={m.content} variant='ghost' size='icon'>
+                        <Icons.Copy className='text-muted-foreground size-full' />
+                      </CopyButton>
+                      <Button
+                        onClick={() => reload()}
+                        variant='ghost'
+                        size='icon'
+                      >
+                        <Icons.RefreshCcw className='text-muted-foreground size-full' />
+                      </Button>
+                      </>
+                    )}
+
                     {m.toolInvocations?.map(
                       (toolInvocation: ToolInvocation) => {
                         const toolCallId = toolInvocation.toolCallId;
@@ -553,7 +570,9 @@ function Config() {
                       variant='destructive'
                       onClick={() => {
                         deleteDocument(document.id);
-                        setDocuments(documents.filter(d => d.id !== document.id));
+                        setDocuments(
+                          documents.filter(d => d.id !== document.id),
+                        );
                       }}
                     >
                       Delete
