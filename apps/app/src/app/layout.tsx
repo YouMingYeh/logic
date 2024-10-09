@@ -10,9 +10,9 @@ const inter = Merriweather({ weight: ['400', '700'], subsets: ['latin'] });
 
 // TODO: update the site metadata
 export const metadata: Metadata = {
-  title: 'logic | learn to persuade people',
+  title: 'logic | learn to think better',
   description:
-    "logic is a chatbot that helps you learn to persuade people. We believe that logos in Aristotle's rhetorical triangle is the key to persuasion.",
+    "logic is a chatbot that helps you learn to think better. We believe that logos in Aristotle's rhetorical triangle is the key to persuasion and thinking makes difference. We are here to help you master it.",
   keywords: [
     'logic',
     'chatbot',
@@ -21,17 +21,17 @@ export const metadata: Metadata = {
     'aristotle',
     'rhetorical triangle',
   ],
-  metadataBase: new URL('https://logic.vercel.app'),
+  metadataBase: new URL('https://logic-mauve.vercel.app'),
   openGraph: {
-    title: 'logic | learn to persuade people',
+    title: 'logic | learn to think better',
     description:
-      'logic is a chatbot that helps you learn to persuade people. We believe that logos in Aristotle\'s rhetorical triangle is the key to persuasion.',
+      "logic is a chatbot that helps you learn to think better. We believe that logos in Aristotle's rhetorical triangle is the key to persuasion and thinking makes difference. We are here to help you master it.",
     type: 'website',
-    url: 'https://logic.vercel.app',
+    url: 'https://logic-mauve.vercel.app',
     siteName: 'logic',
     images: [
       {
-        url: 'https://logic.vercel.app/icon512_rounded.png',
+        url: 'https://logic-mauve.vercel.app/icon512_rounded.png',
         width: 1200,
         height: 630,
         alt: 'logic',
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
 const RootLayout = ({ children }: { children: React.ReactNode }) => (
   <html lang='en' suppressHydrationWarning>
     {/* <Head> */}
-      {/* <link href='/manifest.json' rel='manifest' /> */}
+    {/* <link href='/manifest.json' rel='manifest' /> */}
     {/* </Head> */}
 
     <body className={inter.className}>
