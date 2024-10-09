@@ -103,9 +103,19 @@ import {
   SheetTitle,
   SheetTrigger,
   Textarea,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
   useToast,
 } from 'ui';
-import { ChangeEvent, useEffect, useRef, useState } from 'react';
+import {
+  ChangeEvent,
+  memo,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import createSupabaseClientClient from '../../../../lib/supabase/client';
 import Image from 'next/image';
 import {
@@ -131,6 +141,8 @@ function AI({
     addToolResult,
     isLoading,
     reload,
+    setInput,
+    append,
   } = useChat({
     maxSteps: 10,
     // run client-side tools that are automatically executed:
@@ -195,12 +207,66 @@ function AI({
       if (message.role === 'system') {
         return;
       }
-      handleScrollToBottom();
       await syncMessages(message);
     },
   });
 
+  const [selectedText, setSelectedText] = useState('');
+  const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+  const [isTooltipVisible, setIsTooltipVisible] = useState(false);
+  const [quote, setQuote] = useState('');
+
+  const [bottomVisible, setBottomVisible] = useState(false);
+  const bottomRef = useRef<HTMLDivElement>(null);
+
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const handleTextSelection = useCallback(() => {
+    const selection = window.getSelection();
+    const text = selection?.toString().trim();
+
+    if (text && text.length > 0) {
+      setSelectedText(text);
+      const range = selection?.getRangeAt(0);
+      const rect = range?.getBoundingClientRect();
+      if (rect) {
+        setTooltipPosition({
+          x: rect.left + window.scrollX + rect.width / 2,
+          y: rect.top + window.scrollY - 10,
+        });
+      }
+      setIsTooltipVisible(true);
+    } else {
+      setIsTooltipVisible(false);
+    }
+  }, []);
+
+  const handleMouseDown = useCallback(() => {
+    setIsTooltipVisible(false);
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener('mouseup', handleTextSelection);
+    document.addEventListener('mousedown', handleMouseDown);
+    return () => {
+      document.removeEventListener('mouseup', handleTextSelection);
+      document.removeEventListener('mousedown', handleMouseDown);
+    };
+  }, [handleTextSelection, handleMouseDown]);
+
+  const handleOption = (option: string) => {
+    switch (option) {
+      case 'Copy':
+        navigator.clipboard.writeText(selectedText);
+        break;
+      case 'Quote':
+        setQuote(selectedText);
+        break;
+      default:
+        break;
+    }
+    setIsTooltipVisible(false);
+  };
 
   const handleTextareaChange = () => {
     if (textareaRef.current) {
@@ -238,8 +304,6 @@ function AI({
       },
     ]);
   };
-  const [bottomVisible, setBottomVisible] = useState(false);
-  const bottomRef = useRef<HTMLDivElement>(null);
 
   const handleScrollToBottom = () => {
     bottomRef.current?.scrollIntoView();
@@ -290,6 +354,26 @@ function AI({
 
   return (
     <>
+      <Tooltip open={isTooltipVisible}>
+        <TooltipTrigger asChild>
+          <span
+            style={{
+              position: 'fixed',
+              left: `${tooltipPosition.x}px`,
+              top: `${tooltipPosition.y}px`,
+              pointerEvents: 'none',
+            }}
+          />
+        </TooltipTrigger>
+        <TooltipContent side='top' className='flex space-x-2'>
+          <Button size='sm' onClick={() => handleOption('Copy')}>
+            Copy
+          </Button>
+          <Button size='sm' onClick={() => handleOption('Quote')}>
+            Quote
+          </Button>
+        </TooltipContent>
+      </Tooltip>
       <div className='relative h-fit w-full px-2 pb-16'>
         {messages?.length === 1 && (
           <div className='w-full space-y-4 pt-4'>
@@ -305,6 +389,7 @@ function AI({
             </p>
           </div>
         )}
+
         {messages?.map(
           (m: Message) =>
             m.role !== 'system' &&
@@ -329,12 +414,7 @@ function AI({
                     )}
                   </div>
                   <div className=''>
-                    <div
-                      className='prose max-w-xl'
-                      dangerouslySetInnerHTML={{
-                        __html: marked.parse(m.content),
-                      }}
-                    />
+                    <MessageContent content={m.content} />
                     {m.role === 'assistant' && !isLoading && m.content && (
                       <>
                         <CopyButton
@@ -430,10 +510,31 @@ function AI({
         <form
           onSubmit={e => {
             e.preventDefault();
-            handleSubmit(e);
+            const fullMessage = quote ? `> ${quote}\n\n${input}` : input;
+            append({
+              id: uuid(),
+              role: 'user',
+              content: fullMessage,
+            });
+            setInput('');
+            setQuote('');
           }}
-          className='fixed bottom-4 left-4 right-4 m-auto flex w-[90%] max-w-md gap-2'
+          className='fixed bottom-4 left-4 right-4 m-auto flex w-[90%] max-w-md flex-col gap-2'
         >
+          {/* quote */}
+          {quote && (
+            <div className='bg-background border-muted shadow-xs relative rounded-md border p-4'>
+              <p className='text-muted-foreground text-xs'>{quote}</p>
+              <Button
+                onClick={() => setQuote('')}
+                size='sm'
+                className='absolute bottom-2 right-2'
+                variant={'secondary'}
+              >
+                Clear
+              </Button>
+            </div>
+          )}
           <Textarea
             ref={textareaRef}
             className='bg-background h-auto max-h-[200px] min-h-[40px] resize-none overflow-hidden rounded-lg border px-4 py-4 pr-12 text-base'
@@ -441,6 +542,19 @@ function AI({
             value={input}
             onChange={e => {
               handleInputChange(e);
+            }}
+            onKeyDown={e => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                const fullMessage = quote ? `> ${quote}\n\n${input}` : input;
+                append({
+                  id: uuid(),
+                  role: 'user',
+                  content: fullMessage,
+                });
+                setInput('');
+                setQuote('');
+              }
             }}
           />
           <Button
@@ -471,6 +585,15 @@ function AI({
     </>
   );
 }
+
+const MessageContent = memo(({ content }: { content: string }) => {
+  return (
+    <div
+      className='prose max-w-xl'
+      dangerouslySetInnerHTML={{ __html: marked.parse(content) }}
+    />
+  );
+});
 
 function Config() {
   const [embeddingTitle, setEmbeddingTitle] = useState('');
@@ -634,7 +757,6 @@ type Insight = {
 function InsightCards() {
   const [insights, setInsights] = useState<Insight[]>([]);
 
-
   const fetchInsights = async () => {
     const supabase = createSupabaseClientClient();
     const { data, error } = await supabase.from('insight').select('*');
@@ -654,7 +776,6 @@ function InsightCards() {
   };
 
   useEffect(() => {
-    
     void fetchInsights();
   }, []);
 
@@ -679,7 +800,7 @@ function InsightCards() {
             </div>
           ) : (
             insights.map(insight => (
-              <Card>
+              <Card key={insight.title}>
                 <CardHeader>
                   <CardTitle>
                     {insight.emoji} {insight.title}{' '}
@@ -692,14 +813,21 @@ function InsightCards() {
                   <CardDescription>{insight.description}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div dangerouslySetInnerHTML={{ __html: marked.parse(insight.content) }} className='prose'/>
+                  <div
+                    dangerouslySetInnerHTML={{
+                      __html: marked.parse(insight.content),
+                    }}
+                    className='prose'
+                  />
                 </CardContent>
                 <CardFooter></CardFooter>
               </Card>
             ))
           )}
         </div>
-        <Button onClick={fetchInsights} className='mt-8'>Reload</Button>
+        <Button onClick={fetchInsights} className='mt-8'>
+          Reload
+        </Button>
       </SheetContent>
     </Sheet>
   );
