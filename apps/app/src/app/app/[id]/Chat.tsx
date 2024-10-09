@@ -176,10 +176,10 @@ function AI({
 - **"addResource"**: Save key strategic insights, challenges, opportunities, risks, and objectives throughout the conversation.
 - **"getThinkingModels"**: Identify and recommend the most suitable strategic frameworks (e.g., SWOT, Porter’s Five Forces, Blue Ocean Strategy) to guide high-level analysis and strategy development.
 - **"getThinkingTechniquesBrief"**: Provide a summary of relevant thinking techniques, tailored to the business context.
-- **"getThinkingTechniqueDetails"**: Offer detailed, step-by-step explanations of advanced strategic thinking models and their application.
+- **"getThinkingTechniqueDetails"**: Offer detailed, step-by-step explanations of advanced strategic thinking methods and their application. (It's different from thinking models.)
 - **"saveInsight"**: Store critical insights as they emerge during the strategic analysis for future reference.
 - **"getInsights"**: Retrieve previously stored insights to ensure consistency and build on prior discussions.
-- **"webSearch"**: Conduct external research to gather real-time market data, competitive intelligence, and industry benchmarks that inform strategic decisions.
+- **"webSearch"**: Conduct external research to gather real-time market data, competitive intelligence, and industry benchmarks that inform strategic decisions. You can also use this tool to search for specific thinking models.
 
 ### Approach:
 - **Strategic Guidance for Leaders**: Lead the user through a high-level, structured thought process designed for executive decision-making. Rather than providing solutions, guide the user to reflect on their challenges by introducing sophisticated strategic frameworks and models.
@@ -632,41 +632,29 @@ type Insight = {
 };
 
 function InsightCards() {
-  const [insights, setInsights] = useState<Insight[]>([
-    {
-      title: 'Problem Identification',
-      description: 'Identify the core problem.',
-      content: 'The core problem is the lack of a structured thinking process.',
-      emoji: '🔍',
-      type: 'diagnostic',
-    },
-    {
-      title: 'Solution Suggestion',
-      description: 'Suggest a solution.',
-      content: 'Implement a structured thinking process.',
-      emoji: '💡',
-      type: 'prescriptive',
-    },
-  ]);
+  const [insights, setInsights] = useState<Insight[]>([]);
+
+
+  const fetchInsights = async () => {
+    const supabase = createSupabaseClientClient();
+    const { data, error } = await supabase.from('insight').select('*');
+    if (error) {
+      console.error(error);
+      return;
+    }
+    setInsights(
+      data.map((insight: any) => ({
+        title: insight.title,
+        description: insight.description,
+        content: insight.content,
+        emoji: insight.emoji,
+        type: insight.type,
+      })),
+    );
+  };
 
   useEffect(() => {
-    const supabase = createSupabaseClientClient();
-    const fetchInsights = async () => {
-      const { data, error } = await supabase.from('insight').select('*');
-      if (error) {
-        console.error(error);
-        return;
-      }
-      setInsights(
-        data.map((insight: any) => ({
-          title: insight.title,
-          description: insight.description,
-          content: insight.content,
-          emoji: insight.emoji,
-          type: insight.type,
-        })),
-      );
-    };
+    
     void fetchInsights();
   }, []);
 
@@ -704,13 +692,14 @@ function InsightCards() {
                   <CardDescription>{insight.description}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p>{insight.content}</p>
+                  <div dangerouslySetInnerHTML={{ __html: marked.parse(insight.content) }} className='prose'/>
                 </CardContent>
                 <CardFooter></CardFooter>
               </Card>
             ))
           )}
         </div>
+        <Button onClick={fetchInsights} className='mt-8'>Reload</Button>
       </SheetContent>
     </Sheet>
   );

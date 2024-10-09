@@ -50,7 +50,7 @@ export async function POST(req: Request) {
             ])
             .describe('The type or category of the insight.'),
         }),
-        execute: async ({ insight }) => {
+        execute: async (insight) => {
           const supabase = await createSupabaseServerClient();
           const {
             data: { user },
