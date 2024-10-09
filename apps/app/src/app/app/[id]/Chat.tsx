@@ -105,6 +105,7 @@ import {
   getDocuments,
 } from '../../../../lib/embedding';
 import CopyButton from '../../../components/other/copy-button';
+import ReloadButton from '../../../components/other/reload-button';
 
 function AI({
   profile,
@@ -305,7 +306,10 @@ function AI({
                   <div className='flex-shrink-0'>
                     {m.role === 'user' ? null : (
                       <div className='flex-shrink-0'>
-                        <Emoji name='light-bulb' className='h-8 w-8  translate-y-4' />
+                        <Emoji
+                          name='light-bulb'
+                          className='h-8 w-8 translate-y-4'
+                        />
                       </div>
                     )}
                   </div>
@@ -318,16 +322,21 @@ function AI({
                     />
                     {m.role === 'assistant' && !isLoading && m.content && (
                       <>
-                      <CopyButton text={m.content} variant='ghost' size='icon'>
-                        <Icons.Copy className='text-muted-foreground size-full' />
-                      </CopyButton>
-                      <Button
-                        onClick={() => reload()}
-                        variant='ghost'
-                        size='icon'
-                      >
-                        <Icons.RefreshCcw className='text-muted-foreground size-full' />
-                      </Button>
+                        <CopyButton
+                          text={m.content}
+                          variant='ghost'
+                          size='icon'
+                        >
+                          <Icons.Copy className='text-muted-foreground size-full' />
+                        </CopyButton>
+
+                        <ReloadButton
+                          reload={reload}
+                          variant='ghost'
+                          size='icon'
+                        >
+                          <Icons.RefreshCcw className='text-muted-foreground size-full' />
+                        </ReloadButton>
                       </>
                     )}
 
