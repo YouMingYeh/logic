@@ -285,6 +285,9 @@ function AI({
       case 'Quote':
         setQuote(selectedText);
         break;
+      case 'Google It':
+        window.open(`https://www.google.com/search?q=${selectedText}`);
+        break;
       default:
         break;
     }
@@ -394,6 +397,9 @@ function AI({
           </Button>
           <Button size='sm' onClick={() => handleOption('Quote')}>
             Quote
+          </Button>
+          <Button size='sm' onClick={() => handleOption('Google It')}>
+            Google It
           </Button>
         </TooltipContent>
       </Tooltip>
