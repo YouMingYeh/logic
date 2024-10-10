@@ -106,8 +106,8 @@ const PrivacyPolicy: NextPage = () => {
         </ul>
         <p className='mb-6'>
           To exercise these rights, please contact us at{' '}
-          <a className='text-blue-500 underline' href='mailto:marx@logic.app'>
-            marx@logic.app
+          <a className='text-blue-500 underline' href='mailto:b10705052@ntu.edu.tw'>
+            b10705052@ntu.edu.tw
           </a>{' '}
           or{' '}
           <a
@@ -126,8 +126,8 @@ const PrivacyPolicy: NextPage = () => {
         </p>
         <p className='mb-4'>
           Email:{' '}
-          <a className='text-blue-500 underline' href='mailto:marx@logic.app'>
-            marx@logic.app
+          <a className='text-blue-500 underline' href='mailto:b10705052@ntu.edu.tw'>
+            b10705052@ntu.edu.tw
           </a>
         </p>
         <p className='mb-6'>

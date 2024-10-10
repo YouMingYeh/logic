@@ -12,7 +12,7 @@ const TermsOfService: NextPage = () => {
         <Link href='/'>{'<'}Back to Home</Link>
         <h1 className='mb-6 text-3xl font-bold'>Terms of Service for logic</h1>
         <p className='mb-4'>
-          <strong>Effective Date:</strong> July 1, 2024
+          <strong>Effective Date:</strong> Oct 1, 2024
         </p>
 
         <h2 className='mb-4 text-2xl font-semibold'>1. Acceptance of Terms</h2>
@@ -25,8 +25,7 @@ const TermsOfService: NextPage = () => {
           2. Description of Service
         </h2>
         <p className='mb-6'>
-          logic is an mentor/mentee matching and partnership platform that helps
-          users find mentors, partners, and collaborators.
+          logic is a chatbot helping people think better.
         </p>
 
         <h2 className='mb-4 text-2xl font-semibold'>3. User Accounts</h2>
@@ -95,8 +94,8 @@ const TermsOfService: NextPage = () => {
         </p>
         <p className='mb-4'>
           Email:{' '}
-          <a className='text-blue-500 underline' href='mailto:marx@logic.app'>
-            marx@logic.app
+          <a className='text-blue-500 underline' href='mailto:b10705052@ntu.edu.tw'>
+            b10705052@ntu.edu.tw
           </a>
         </p>
         <p className='mb-6'>

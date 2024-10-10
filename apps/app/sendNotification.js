@@ -7,7 +7,7 @@ const vapidKeys = {
 };
 
 webPush.setVapidDetails(
-  'mailto:marx@logic.app',
+  'mailto:b10705052@ntu.edu.tw',
   vapidKeys.publicKey,
   vapidKeys.privateKey,
 );

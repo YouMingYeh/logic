@@ -59,7 +59,7 @@ export const NavBar: FC<NavbarProps> = () => {
               className={cn(buttonVariants(), 'px-4')}
               onClick={onLoginClick}
             >
-              登入
+              Login
             </Button>
           </div>
         )}
@@ -85,10 +85,10 @@ export const NavBar: FC<NavbarProps> = () => {
               <div className='flex flex-col gap-y-2 text-center'>
               <Image src="/logo.png" alt='logo' height='512' width='512' className='mx-auto h-16 w-16' />
                 <h2 className='text-xl font-semibold tracking-tight'>
-                  歡迎使用 logic ！
+                  Welcome to Logic
                 </h2>
                 <p className='text-muted-foreground text-sm'>
-                  請登入以繼續使用
+                  Please login to continue.
                 </p>
               </div>
             </div>
@@ -96,7 +96,7 @@ export const NavBar: FC<NavbarProps> = () => {
               className={cn(buttonVariants({ size: 'sm' }), 'px-4')}
               onClick={onLoginClick}
             >
-              登入
+              Login
             </Button>
           </div>
         </div>

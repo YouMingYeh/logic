@@ -21,21 +21,21 @@ export default function Footer() {
             className='text-muted-foreground text-sm underline-offset-4 hover:underline'
             href='/privacy'
           >
-            隱私權政策 Privacy Policy
+            Privacy Policy
           </Link>
           <span className='mx-2'>|</span>
           <Link
             className='text-muted-foreground text-sm underline-offset-4 hover:underline'
             href='/terms'
           >
-            服務條款 Terms of Service
+            Terms of Service
           </Link>
           <span className='mx-2'>|</span>
           <Link
             className='text-muted-foreground text-sm underline-offset-4 hover:underline'
-            href='mailto:marx@logic.app'
+            href='mailto:b10705052@ntu.edu.tw'
           >
-            聯絡我們 Contact Us
+            Contact Us
           </Link>
           <br />
           <span className='text-muted-foreground text-sm'>
