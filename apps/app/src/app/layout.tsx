@@ -10,11 +10,11 @@ const inter = Merriweather({ weight: ['400', '700'], subsets: ['latin'] });
 
 // TODO: update the site metadata
 export const metadata: Metadata = {
-  title: 'logic | learn to think better',
+  title: 'Logic | Think better',
   description:
-    "logic is a chatbot that helps you learn to think better. We believe that logos in Aristotle's rhetorical triangle is the key to persuasion and thinking makes difference. We are here to help you master it.",
+    "Logic is an AI-driven assistant designed to elevate the thinking of top executives, entrepreneurs, and decision-makers. Through expert techniques, case studies, and innovative problem-solving frameworks, Logic helps you approach challenges with clarity and make smarter decisions.",
   keywords: [
-    'logic',
+    'Logic',
     'chatbot',
     'persuasion',
     'logos',
@@ -23,18 +23,18 @@ export const metadata: Metadata = {
   ],
   metadataBase: new URL('https://logic-mauve.vercel.app'),
   openGraph: {
-    title: 'logic | learn to think better',
+    title: 'Logic | Think better',
     description:
-      "logic is a chatbot that helps you learn to think better. We believe that logos in Aristotle's rhetorical triangle is the key to persuasion and thinking makes difference. We are here to help you master it.",
+      "Logic is an AI-driven assistant designed to elevate the thinking of top executives, entrepreneurs, and decision-makers. Through expert techniques, case studies, and innovative problem-solving frameworks, Logic helps you approach challenges with clarity and make smarter decisions.",
     type: 'website',
     url: 'https://logic-mauve.vercel.app',
-    siteName: 'logic',
+    siteName: 'Logic',
     images: [
       {
         url: 'https://logic-mauve.vercel.app/icon512_rounded.png',
         width: 1200,
         height: 630,
-        alt: 'logic',
+        alt: 'Logic',
       },
     ],
   },
