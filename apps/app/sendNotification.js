@@ -25,8 +25,8 @@ const pushSubscription = {
 const payload = JSON.stringify({
   message: '笨笨奕萱',
   body: '和志同道合的夥伴來場 Coffee Chat！',
-  icon: 'https://logic-seven.vercel.app/favicon.ico',
-  url: 'https://logic-seven.vercel.app',
+  icon: 'https://logic.adastra.tw/favicon.ico',
+  url: 'https://logic.adastra.tw',
 });
 
 webPush

@@ -3,31 +3,25 @@ import type { MetadataRoute } from 'next';
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
     {
-      url: 'https://logic-seven.vercel.app',
+      url: 'https://logic.adastra.tw',
       lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 1,
     },
     {
-      url: 'https://logic-seven.vercel.app/home',
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.8,
-    },
-    {
-      url: 'https://logic-seven.vercel.app/pricing',
+      url: 'https://logic.adastra.tw/pricing',
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.5,
     },
     {
-      url: 'https://logic-seven.vercel.app/terms',
+      url: 'https://logic.adastra.tw/terms',
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.3,
     },
     {
-      url: 'https://logic-seven.vercel.app/privacy',
+      url: 'https://logic.adastra.tw/privacy',
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.3,

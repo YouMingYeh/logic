@@ -4,8 +4,8 @@ export default function robots(): MetadataRoute.Robots {
   return {
     rules: {
       userAgent: '*',
-      allow: ['/', '/home', '/pricing', '/terms', '/privacy'],
+      allow: ['/', '/pricing', '/terms', '/privacy'],
     },
-    sitemap: 'https://logic.co/sitemap.xml',
+    sitemap: 'https://logic.adastra.tw/sitemap.xml',
   };
 }
