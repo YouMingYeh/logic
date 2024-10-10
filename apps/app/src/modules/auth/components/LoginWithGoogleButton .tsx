@@ -10,8 +10,9 @@ export const LoginWithGoogleButton = () => {
       toast({ title: error.message, variant: 'destructive' });
     }
   };
+  return null
   return (
-    <Button onClick={onClick} type='button' variant='outline' disabled>
+    <Button onClick={onClick} type='button' variant='outline' disabled className='overflow-ellipsis'>
       <Icons.Google className='mr-2 h-4 w-4 fill-current' />
       Login with Google (Under construction 👷‍♂️)
     </Button>

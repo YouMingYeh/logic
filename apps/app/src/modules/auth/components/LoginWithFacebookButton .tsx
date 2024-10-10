@@ -10,6 +10,7 @@ export const LoginWithFacebookButton = () => {
       toast({ title: error.message, variant: 'destructive' });
     }
   };
+  return null
   return (
     <button
       className={cn(buttonVariants({ variant: 'outline' }))}

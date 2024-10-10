@@ -12,5 +12,5 @@ const contents = [
   'Empowering Leaders with Clear Thinking.',
   'Strategic Thinking for Every Challenge.',
   'Master Complex Problems, Lead with Confidence.',
-  'Logic: Unlock Your Potential with Clear Thought.',
+  'Unlock Your Potential with Clear Thought.',
 ];
