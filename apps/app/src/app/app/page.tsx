@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Button, Icons, Input, Label, useToast } from 'ui';
 import createSupabaseClientClient from '../../../lib/supabase/client';
 import { useRouter } from 'next/navigation';
+import Loading from './loading';
 
 type Profile = {
   name: string;
@@ -51,6 +52,7 @@ export default function Page() {
       const { data } = await supabase.from('profile').select().single();
       if (data) {
         push(`/app/${data.user_id}`);
+        return;
       }
       setFetching(false);
     };
@@ -59,7 +61,7 @@ export default function Page() {
   }, []);
 
   if (fetching) {
-    return <div>Loading...</div>;
+    return <Loading />;
   }
 
   return (

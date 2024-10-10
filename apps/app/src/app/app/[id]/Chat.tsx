@@ -687,7 +687,7 @@ function Config() {
   }, []);
   return (
     <Sheet>
-      <SheetTrigger className='fixed bottom-4 right-4'>
+      <SheetTrigger className='fixed top-4 right-4'>
         <Button size='icon'>
           <Icons.Settings className='size-full' />
         </Button>
@@ -810,7 +810,7 @@ function InsightCards() {
 
   return (
     <Sheet>
-      <SheetTrigger className='fixed bottom-16 right-4'>
+      <SheetTrigger className='fixed top-16 right-4'>
         <Button size='icon'>
           <Icons.Zap className='size-full' />
         </Button>
