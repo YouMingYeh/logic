@@ -13,10 +13,9 @@ export default function CallToAction() {
 }
 
 const CTAs = [
-  'Think Smarter Today',
-  'Elevate Your Decision-Making',
-  'Solve Big Problems',
-  'Elevate Your Thinking',
-  'Master Strategic Thinking',
-  'Lead with Confidence',
+  'Start Solving Smarter Today',
+  'Elevate Your Thinking Now',
+  'Unlock Strategic Insights',
+  'Think Bigger, Act Smarter',
+  'MLead with Clarity, Think with Confidence',
 ];
