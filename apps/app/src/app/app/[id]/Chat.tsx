@@ -257,8 +257,12 @@ function AI({
           x: rect.left + window.scrollX + rect.width / 2,
           y: rect.top + window.scrollY - 10,
         });
+        if (rect.top + window.scrollY - 10 < 0) {
+          setIsTooltipVisible(false);
+        } else {
+          setIsTooltipVisible(true);
+        }
       }
-      setIsTooltipVisible(true);
     } else {
       setIsTooltipVisible(false);
     }
