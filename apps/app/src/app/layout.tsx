@@ -21,17 +21,17 @@ export const metadata: Metadata = {
     'aristotle',
     'rhetorical triangle',
   ],
-  metadataBase: new URL('https://logic-mauve.vercel.app'),
+  metadataBase: new URL('https://logic.adastra.tw'),
   openGraph: {
     title: 'Logic | Think better',
     description:
       "Logic is an AI-driven assistant designed to elevate the thinking of top executives, entrepreneurs, and decision-makers. Through expert techniques, case studies, and innovative problem-solving frameworks, Logic helps you approach challenges with clarity and make smarter decisions.",
     type: 'website',
-    url: 'https://logic-mauve.vercel.app',
+    url: 'https://logic.adastra.tw',
     siteName: 'Logic',
     images: [
       {
-        url: 'https://logic-mauve.vercel.app/icon512_rounded.png',
+        url: 'https://logic.adastra.tw/icon512_rounded.png',
         width: 1200,
         height: 630,
         alt: 'Logic',
